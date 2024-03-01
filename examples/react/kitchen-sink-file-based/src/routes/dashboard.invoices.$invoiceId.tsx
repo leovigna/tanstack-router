@@ -9,6 +9,7 @@ import { z } from 'zod'
 import { fetchInvoiceById, patchInvoice } from '../utils/mockTodos'
 import { useMutation } from '../hooks/useMutation'
 import { InvoiceFields } from '../components/InvoiceFields'
+import { useDebounce } from '@uidotdev/usehooks'
 
 export const Route = createFileRoute('/dashboard/invoices/$invoiceId')({
   parseParams: (params) => ({
@@ -37,16 +38,20 @@ function InvoiceComponent() {
   })
   const [notes, setNotes] = React.useState(search.notes ?? '')
 
+  // Debounce `notes` by 50ms
+  // Holding down a key while inputing a note will NOT trigger navigate
+  // Also see https://usehooks.com/usedebounce
+  const debouncedNotes = useDebounce(notes, 50);
+
   React.useEffect(() => {
     navigate({
       search: (old) => ({
         ...old,
-        notes: notes ? notes : undefined,
+        notes: debouncedNotes ? debouncedNotes : undefined,
       }),
       replace: true,
-      params: true,
     })
-  }, [notes])
+  }, [debouncedNotes])
 
   return (
     <form
