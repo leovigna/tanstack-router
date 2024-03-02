@@ -21,7 +21,8 @@ function LoginComponent() {
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     auth.login(username)
-    router.invalidate()
+    //No longer needed as App-level check
+    //router.invalidate()
   }
 
   // Ah, the subtle nuances of client side auth. 🙄
@@ -38,7 +39,8 @@ function LoginComponent() {
       <button
         onClick={() => {
           auth.logout()
-          router.invalidate()
+          //No longer needed as App-level check
+          //router.invalidate()
         }}
         className="text-sm bg-blue-500 text-white border inline-block py-1 px-2 rounded"
       >

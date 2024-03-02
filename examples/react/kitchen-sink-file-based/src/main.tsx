@@ -5,7 +5,7 @@ import {
   ErrorComponent,
   createRouter,
 } from '@tanstack/react-router'
-import { auth } from './utils/auth'
+import { AuthContext } from './utils/auth'
 import { Spinner } from './components/Spinner'
 import { routeTree } from './routeTree.gen'
 import { useSessionStorage } from './hooks/useSessionStorage'
@@ -32,11 +32,17 @@ declare module '@tanstack/react-router' {
   }
 }
 
-function App() {
+function InnerApp() {
   // This stuff is just to tweak our sandbox setup in real-time
   const [loaderDelay, setLoaderDelay] = useSessionStorage('loaderDelay', 500)
   const [pendingMs, setPendingMs] = useSessionStorage('pendingMs', 1000)
   const [pendingMinMs, setPendingMinMs] = useSessionStorage('pendingMinMs', 500)
+
+  const auth = React.useContext(AuthContext)
+
+  React.useEffect(() => {
+    router.invalidate()
+  }, [auth.status])
 
   return (
     <>
@@ -130,6 +136,34 @@ function App() {
       />
     </>
   )
+}
+
+function App() {
+  // Define our reactive AuthContext. In an actual project
+  // this would be replaced by some Auth Context provider such as <ClerkProvider> 
+  // and we would read auth status using related hooks such as useUser() https://clerk.com/docs/references/react/use-user
+  const [status, setStatus] = React.useState<'loggedOut' | 'loggedIn'>('loggedOut');
+  const [username, setUsername] = React.useState<string | undefined>(undefined)
+  const login = React.useCallback((username: string) => {
+    setStatus("loggedIn")
+    setUsername(username)
+  }, [])
+  const logout = React.useCallback(() => {
+    setStatus("loggedOut")
+    setUsername(undefined)
+  }, [])
+  const authContextValue = React.useMemo(() => ({
+    status,
+    username,
+    login,
+    logout
+  }), [status, username, login, logout]);
+
+  return <>
+    <AuthContext.Provider value={authContextValue}>
+      <InnerApp />
+    </AuthContext.Provider>
+  </>
 }
 
 const rootElement = document.getElementById('app')!

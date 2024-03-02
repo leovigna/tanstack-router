@@ -1,13 +1,13 @@
-export const auth: Auth = {
+import { createContext } from "react"
+
+const auth: Auth = {
   status: 'loggedOut',
   username: undefined,
   login: (username: string) => {
-    auth.status = 'loggedIn'
-    auth.username = username
+    throw new Error("wrap component with AuthContext.Provider")
   },
   logout: () => {
-    auth.status = 'loggedOut'
-    auth.username = undefined
+    throw new Error("wrap component with AuthContext.Provider")
   },
 }
 
@@ -17,3 +17,5 @@ export type Auth = {
   status: 'loggedOut' | 'loggedIn'
   username?: string
 }
+
+export const AuthContext = createContext<Auth>(auth)

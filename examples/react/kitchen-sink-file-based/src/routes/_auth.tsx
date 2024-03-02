@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
-import { auth } from '../utils/auth'
 
 export const Route = createFileRoute('/_auth')({
   // Before loading, authenticate the user via our auth context
@@ -21,7 +20,7 @@ export const Route = createFileRoute('/_auth')({
 
     // Otherwise, return the user in context
     return {
-      username: auth.username,
+      username: context.auth.username,
     }
   },
 })
